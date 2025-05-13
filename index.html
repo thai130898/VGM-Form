@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VGM Form Application</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .container-app {
+            max-width: 1000px; 
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 { 
+            color: #1e3a8a; 
+        }
+        label { 
+            font-weight: 500;
+            color: #374151;
+        }
+        .shipper-info-label-screen-hidden { 
+            display: none;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="tel"],
+        input[type="number"], 
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            margin-top: 0.25rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+        textarea {
+            min-height: 80px;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+            border: none;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+        th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: #1e3a8a; 
+            vertical-align: top; 
+        }
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: #f9fafb;
+        }
+        .print-only { display: none; }
+        .print-official-header { display: none; } 
+
+        /* Styles for FCL/LCL choice */
+        .shipment-type-selector {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background-color: #eef2ff;
+            border-radius: 8px;
+            border: 1px solid #c7d2fe;
+        }
+        .shipment-type-selector label {
+            margin-right: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+         .shipment-type-selector input[type="radio"] {
+            margin-right: 0.3rem;
+            accent-color: #2563eb; /* Modern way to color radio buttons */
+            width: auto; /* Override default full width for inputs */
+            margin-top: 0; /* Align with label */
+        }
+
+
+        @media print {
+            @page {
+                size: A4 landscape; 
+                margin: 0.5in; 
+            }
+            body {
+                background-color: white !important;
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 10pt; 
+                color: black;
+                margin: 0;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            .container-app {
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                border-radius: 0;
+                border: none;
+            }
+            .print-official-header {
+                display: block !important;
+                text-align: center; 
+                font-size: 11pt; 
+                line-height: 1.2;
+                margin-bottom: 0.75rem; 
+                white-space: pre-line;
+            }
+            .print-official-header strong { 
+                font-weight: bold !important;
+            }
+            .main-titles-container { 
+                text-align: center;
+                margin-bottom: 0.25rem !important; 
+            }
+            h1 { 
+                color: black !important; 
+                font-size: 12pt !important; 
+                font-weight: bold !important; 
+                margin-bottom: 0.15rem !important;
+            }
+            h2 { 
+                color: black !important; 
+                font-size: 11pt !important; 
+                font-weight: bold !important; 
+                margin-bottom: 0.1rem !important; 
+            }
+            #printLocationDateText { 
+                display: block !important;
+                text-align: right;
+                font-size: 10pt; 
+                font-family: 'Times New Roman', Times, serif;
+                margin-bottom: 1rem; 
+            }
+            .form-section {
+                margin-bottom: 0.4rem; 
+                padding: 0;
+                border: none;
+                background-color: white !important;
+            }
+            .form-section h2.shipper-section-title-print { 
+                color: black !important; 
+                font-size: 10pt !important; 
+                font-weight: bold !important; 
+                margin-bottom: 0.1rem !important; 
+                padding-bottom: 0 !important; 
+                border-bottom: none !important; 
+                text-align: left; 
+            }
+             .form-section h2#particularsSectionTitle { /* Styles for section 2 title in print */
+                color: black !important;
+                font-size: 10pt !important;
+                font-weight: bold !important;
+                margin-bottom: 0.2rem !important;
+                padding-bottom: 0.05rem !important;
+                border-bottom: 1px solid black;
+            }
+            label.shipper-info-label-screen-hidden { 
+                 display: none !important;
+            }
+            #shipperName[data-print-replacement], 
+            #shipperAddress[data-print-replacement] {
+                margin-top: 0.05rem !important; 
+                padding-left: 0 !important; 
+            }
+
+
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+
+            table {
+                font-size: 8pt; 
+                margin-top: 0.2rem;
+                width: 100%;
+                table-layout: fixed; 
+            }
+            th, td {
+                border: 1px solid black !important;
+                padding: 1.5px 2.5px; 
+                word-wrap: break-word; 
+                vertical-align: top; 
+            }
+            th { 
+                background-color: #e0e0e0 !important; 
+                font-weight: bold !important; 
+                color: black !important; 
+            }
+
+            .commitment-text {
+                margin-top: 0.5rem;
+                font-size: 9pt;
+            }
+            .commitment-text p { margin-bottom: 0.05rem; }
+            
+            .signature-area {
+                 width: 100%;
+                 text-align: center; 
+                 margin-top: 0.75rem; 
+                 page-break-inside: avoid;
+            }
+            .signature-content-wrapper { 
+                display: block; 
+                width: 100%; 
+                margin-top: 0.25rem;
+                text-align: center; 
+            }
+            #signatureImageDisplay { 
+                max-width: 85%; 
+                width: auto; 
+                height: auto; 
+                max-height: 180px; 
+                object-fit: contain;
+                border: none !important;
+                display: inline-block; /* Default display for print if image is present */
+            }
+            .signature-text { display: none !important; }
+
+            span[data-print-replacement] {
+                 font-size: 9pt !important; 
+                 font-family: 'Times New Roman', Times, serif !important;
+                 color: black !important;
+                 background-color: white !important;
+                 border: none !important;
+                 padding: 1px 1.5px !important;
+                 display: inline-block;
+                 vertical-align: baseline; 
+                 line-height: 1.1; 
+            }
+            span[data-print-replacement].textarea-replacement {
+                white-space: pre-wrap;
+                display: block;
+                width: 100%;
+                line-height: 1.1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-app">
+        <div class="print-official-header"><strong>Biểu mẫu</strong>
+(Ban hành kèm theo Văn bản số 2428/CHHVN-VTDVHH
+Ngày 15 tháng 6 năm 2016 của Cục Hàng Hải Việt Nam)</div>
+
+        <div class="main-titles-container text-center mb-8"> 
+            <h1 id="mainFormTitleVn" class="text-2xl font-bold mb-1">BẢNG XÁC NHẬN KHỐI LƯỢNG TOÀN BỘ CỦA CÔNG-TE-NƠ VẬN CHUYỂN QUỐC TẾ</h1>
+            <h2 id="mainFormTitleEn" class="text-xl font-semibold">VERIFIED GROSS MASS OF CONTAINER ON INTERNATIONAL TRANSPORT (VGM)</h2>
+        </div>
+
+        <div id="printLocationDateText" class="print-only">
+            </div>
+
+        <form id="vgmForm">
+            <div class="form-section no-print">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2"> 
+                    <div>
+                        <label for="formLocation" class="block text-sm">Nơi lập/Location:</label>
+                        <input type="text" id="formLocation" name="formLocation" value="Hà Nội">
+                    </div>
+                    <div>
+                        <label for="formDate" class="block text-sm">Ngày/Date:</label>
+                        <input type="date" id="formDate" name="formDate" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="text-lg font-semibold mb-4 border-b pb-2 shipper-section-title-print">1.&nbsp;&nbsp;&nbsp;&nbsp;Tên người gửi hàng, địa chỉ, số điện thoại/ Name of shipper, address, phone number:</h2>
+                <div>
+                    <label for="shipperName" class="block text-sm shipper-info-label-screen-hidden">Tên người gửi hàng / Shipper Name:</label>
+                    <input type="text" id="shipperName" name="shipperName" value="GARMENT 10 CORPORATION - JOINT STOCK COMPANY" required class="mt-1"> </div>
+                <div class="mt-1"> <label for="shipperAddress" class="block text-sm shipper-info-label-screen-hidden">Địa chỉ / Address:</label>
+                    <textarea id="shipperAddress" name="shipperAddress" required class="mt-1">PHUC LOI, LONG BIEN, HANOI, VIETNAM</textarea>
+                </div>
+            </div>
+
+            <div class="form-section shipment-type-selector no-print">
+                <span class="text-lg font-semibold mr-4">Loại hình vận chuyển / Shipment Type:</span>
+                <label for="shipmentTypeFCL">
+                    <input type="radio" id="shipmentTypeFCL" name="shipmentType" value="FCL" checked> FCL (Container)
+                </label>
+                <label for="shipmentTypeLCL">
+                    <input type="radio" id="shipmentTypeLCL" name="shipmentType" value="LCL"> LCL (CFS/Lô hàng lẻ)
+                </label>
+            </div>
+
+            <div class="form-section">
+                <h2 id="particularsSectionTitle" class="text-lg font-semibold mb-4 border-b pb-2">
+                    </h2>
+                
+                <div id="fclTableSection" class="table-container">
+                    <table id="fclTable">
+                        <thead>
+                            <tr>
+                                <th class="w-10">Stt<br>Seq</th> 
+                                <th>Số Container<br>Container No.</th>
+                                <th>Kích cỡ Container<br>Size of container (20'/40'/ other)</th>
+                                <th>Khối lượng sử dụng lớn nhất<br>Max gross weight (kg)</th>
+                                <th>Xác nhận khối lượng toàn bộ của công-te-nơ<br>Verified gross mass of a packed container (kg)</th>
+                                <th>Tên đơn vị, địa chỉ cân<br>(Name of weighting scale, Address)</th>
+                                <th>Ghi chú<br>Remark (số booking)</th>
+                                <th class="no-print w-16"></th> 
+                            </tr>
+                        </thead>
+                        <tbody id="fclTableBody">
+                            </tbody>
+                    </table>
+                </div>
+
+                <div id="lclTableSection" class="table-container" style="display: none;">
+                    <table id="lclTable">
+                        <thead>
+                            <tr>
+                                <th class="w-10">Stt<br>item No</th>
+                                <th>Số booking<br>No. booking</th>
+                                <th>Số kiện<br>PKGS No.</th>
+                                <th>Xác nhận khối lượng toàn bộ lô hàng<br>(total kg)</th>
+                                <th>Tên đơn vị, địa chỉ cân<br>(Name of weighting scale, Address)</th>
+                                <th class="no-print w-16"></th> 
+                            </tr>
+                        </thead>
+                        <tbody id="lclTableBody">
+                            </tbody>
+                    </table>
+                </div>
+                <button type="button" id="addItemBtn" class="btn btn-primary mt-4 no-print">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    </button>
+            </div>
+
+            <div class="form-section commitment-text">
+                <p id="commitmentTextVn" class="text-sm"></p>
+                <p id="commitmentTextEn" class="text-sm italic mt-1"></p>
+            </div>
+
+            <div class="form-section no-print">
+                <h2 class="text-lg font-semibold mb-2 border-b pb-1">3. Chữ ký / Signature</h2>
+                <label for="signatureUpload" class="block text-sm mb-1">Tải lên ảnh chữ ký (hiển thị khi in) / Upload Signature Image (for print):</label>
+                <input type="file" id="signatureUpload" name="signatureUpload" accept="image/*" class="w-full text-sm text-slate-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-md file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-blue-50 file:text-blue-700
+                    hover:file:bg-blue-100 cursor-pointer
+                ">
+                <img id="signaturePreviewScreen" src="https://placehold.co/150x50/EFEFEF/333333?text=Preview" alt="Signature Preview" class="mt-2 h-16 w-auto border rounded" style="display: none; object-fit: contain;">
+            </div>
+
+
+            <div class="mt-8 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 no-print">
+                <button type="button" id="resetFormBtn" class="btn btn-secondary">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                    </svg>
+                    Làm mới / Reset
+                </button>
+                <button type="button" id="printFormBtn" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062-.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
+                    </svg>
+                    In / Xuất PDF (Print / Export PDF)
+                </button>
+            </div>
+
+            <div class="print-only signature-area">
+                <div class="signature-content-wrapper">
+                     <img id="signatureImageDisplay" src="https://placehold.co/200x80/EFEFEF/333333?text=Signature" alt="Signature">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function formatWeightInput(inputElement) {
+            let rawValue = inputElement.value.toUpperCase().replace(/\s*KG\s*$/i, '').replace(/,/g, '');
+            if (rawValue.trim() === '') { 
+                inputElement.value = '';
+                return;
+            }
+            if (!/^\d*\.?\d*$/.test(rawValue) || isNaN(parseFloat(rawValue))) {
+                inputElement.value = ''; 
+                return;
+            }
+            let parts = rawValue.split('.');
+            let integerPart = parts[0];
+            let decimalPart = parts.length > 1 ? '.' + parts[1] : '';
+            integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            inputElement.value = integerPart + decimalPart + 'KG';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const defaultSignaturePlaceholder = "https://placehold.co/200x80/EFEFEF/333333?text=Signature"; 
+            const screenPreviewPlaceholder = "https://placehold.co/150x50/EFEFEF/333333?text=Preview";
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            document.getElementById('formDate').value = `${year}-${month}-${day}`;
+
+            const addItemBtn = document.getElementById('addItemBtn');
+            const fclTableBody = document.getElementById('fclTableBody');
+            const lclTableBody = document.getElementById('lclTableBody');
+            let fclSeq = 0;
+            let lclSeq = 0;
+
+            const signatureUploadInput = document.getElementById('signatureUpload');
+            const signatureImagePrint = document.getElementById('signatureImageDisplay');
+            const signaturePreviewScreen = document.getElementById('signaturePreviewScreen');
+
+            const particularsSectionTitle = document.getElementById('particularsSectionTitle');
+            const fclTableSection = document.getElementById('fclTableSection');
+            const lclTableSection = document.getElementById('lclTableSection');
+            const shipmentTypeRadios = document.querySelectorAll('input[name="shipmentType"]');
+            let currentShipmentType = 'FCL'; // Default
+
+            const commitmentTextVn = document.getElementById('commitmentTextVn');
+            const commitmentTextEn = document.getElementById('commitmentTextEn');
+
+            function updateFormForShipmentType(type) {
+                currentShipmentType = type;
+                if (type === 'FCL') {
+                    particularsSectionTitle.innerHTML = "2. Thông số công-te-nơ / Container's Particulars";
+                    addItemBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg> Thêm Công-te-nơ / Add Container`;
+                    fclTableSection.style.display = '';
+                    lclTableSection.style.display = 'none';
+                    commitmentTextVn.textContent = "Chúng tôi cam kết và chịu trách nhiệm việc xác nhận khối lượng toàn bộ công-te-nơ nói trên là đúng sự thật.";
+                    commitmentTextEn.textContent = "We are committed to and responsible for the VGM of the container above is true.";
+                    if (fclTableBody.rows.length === 0) addFCLRow();
+                } else { // LCL
+                    particularsSectionTitle.innerHTML = "2. Thông số lô hàng / Shipment's particular:";
+                    addItemBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg> Thêm Lô hàng / Add Shipment`;
+                    fclTableSection.style.display = 'none';
+                    lclTableSection.style.display = '';
+                    commitmentTextVn.textContent = "Chúng tôi cam kết và chịu trách nhiệm việc xác nhận khối lượng toàn bộ lô hàng nói trên là đúng sự thật.";
+                    commitmentTextEn.textContent = "We are committed to and responsible for the VGM of the shipment above is true.";
+                    if (lclTableBody.rows.length === 0) addLCLRow();
+                }
+            }
+            
+            shipmentTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'FCL') {
+                        lclTableBody.innerHTML = ''; 
+                        lclSeq = 0;
+                    } else {
+                        fclTableBody.innerHTML = '';
+                        fclSeq = 0;
+                    }
+                    updateFormForShipmentType(this.value);
+                });
+            });
+
+
+            function addFCLRow() {
+                fclSeq++;
+                const row = fclTableBody.insertRow();
+                row.innerHTML = `
+                    <td class="text-center">${fclSeq}</td>
+                    <td><input type="text" name="fclContainerNo[]" class="w-full p-1 border rounded text-xs" placeholder="Container No." required></td>
+                    <td>
+                        <select name="fclContainerSize[]" class="w-full p-1 border rounded text-xs container-size-select">
+                            <option value="20DC">20DC</option>
+                            <option value="40DC">40DC</option>
+                            <option value="40HC">40HC</option>
+                            <option value="45HC">45HC</option> 
+                            <option value="OT">Other</option>
+                        </select>
+                        <input type="text" name="fclContainerSizeOther[]" class="w-full p-1 border rounded text-xs mt-1 hidden" placeholder="Specify size">
+                    </td>
+                    <td><input type="text" name="fclMaxGrossWeight[]" class="w-full p-1 border rounded text-xs" placeholder="Max Gross" required></td>
+                    <td><input type="text" name="fclVerifiedGrossMass[]" class="w-full p-1 border rounded text-xs" placeholder="VGM" required></td>
+                    <td><input type="text" name="fclScaleNameAddress[]" class="w-full p-1 border rounded text-xs" value="TỔNG CÔNG TY MAY 10 - CTCP" placeholder="Scale Name, Address" required></td>
+                    <td><input type="text" name="fclBookingNo[]" class="w-full p-1 border rounded text-xs" placeholder="Booking No."></td>
+                    <td class="no-print"><button type="button" class="btn btn-danger btn-sm remove-row-btn p-2">Xóa</button></td>
+                `;
+                const newSelect = row.querySelector('.container-size-select');
+                const otherInput = row.querySelector('input[name="fclContainerSizeOther[]"]');
+                newSelect.addEventListener('change', function() {
+                    if (this.value === 'OT') {
+                        otherInput.classList.remove('hidden');
+                        otherInput.required = true;
+                    } else {
+                        otherInput.classList.add('hidden');
+                        otherInput.required = false;
+                        otherInput.value = '';
+                    }
+                });
+                const maxGrossInput = row.querySelector('input[name="fclMaxGrossWeight[]"]');
+                const verifiedGrossInput = row.querySelector('input[name="fclVerifiedGrossMass[]"]');
+                maxGrossInput.addEventListener('blur', function() { formatWeightInput(this); });
+                verifiedGrossInput.addEventListener('blur', function() { formatWeightInput(this); });
+            }
+
+            function addLCLRow() {
+                lclSeq++;
+                const row = lclTableBody.insertRow();
+                row.innerHTML = `
+                    <td class="text-center">${lclSeq}</td>
+                    <td><input type="text" name="lclBookingNo[]" class="w-full p-1 border rounded text-xs" placeholder="Số booking" required></td>
+                    <td><input type="text" name="lclPkgsNo[]" class="w-full p-1 border rounded text-xs" placeholder="Số kiện" required></td>
+                    <td><input type="text" name="lclVgmShipment[]" class="w-full p-1 border rounded text-xs" placeholder="KL toàn bộ (kg)" required></td>
+                    <td><input type="text" name="lclWeighingScale[]" class="w-full p-1 border rounded text-xs" value="TỔNG CÔNG TY MAY 10 - CTCP" placeholder="Scale Name, Address" required></td>
+                    <td class="no-print"><button type="button" class="btn btn-danger btn-sm remove-row-btn p-2">Xóa</button></td>
+                `;
+                const verifiedGrossInput = row.querySelector('input[name="lclVgmShipment[]"]');
+                verifiedGrossInput.addEventListener('blur', function() { formatWeightInput(this); });
+            }
+            
+            // Initial setup
+            updateFormForShipmentType('FCL');
+
+
+            addItemBtn.addEventListener('click', function() {
+                if (currentShipmentType === 'FCL') {
+                    addFCLRow();
+                } else {
+                    addLCLRow();
+                }
+            });
+
+            // Delegated event listener for remove buttons in both tables
+            document.getElementById('vgmForm').addEventListener('click', function (e) {
+                if (e.target && e.target.classList.contains('remove-row-btn')) {
+                    const row = e.target.closest('tr');
+                    const tableBody = row.parentNode;
+                    row.remove();
+                    
+                    // Re-sequence
+                    const rows = tableBody.querySelectorAll('tr');
+                    rows.forEach((r, index) => {
+                       r.cells[0].textContent = index + 1;
+                    });
+                    if (tableBody.id === 'fclTableBody') fclSeq = rows.length;
+                    if (tableBody.id === 'lclTableBody') lclSeq = rows.length;
+                }
+            });
+
+
+            signatureUploadInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        signatureImagePrint.src = e.target.result;
+                        signaturePreviewScreen.src = e.target.result;
+                        signaturePreviewScreen.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    signatureImagePrint.src = defaultSignaturePlaceholder;
+                    signaturePreviewScreen.src = screenPreviewPlaceholder;
+                    signaturePreviewScreen.style.display = 'none';
+                }
+            });
+
+            const printFormBtn = document.getElementById('printFormBtn');
+            printFormBtn.addEventListener('click', function () {
+                // Format all relevant weight fields before printing
+                document.querySelectorAll('input[name^="fclMaxGrossWeight"], input[name^="fclVerifiedGrossMass"], input[name^="lclVgmShipment"]').forEach(input => {
+                    formatWeightInput(input); 
+                });
+
+                const locationVal = document.getElementById('formLocation').value;
+                const dateVal = document.getElementById('formDate').value;
+                const printLocationDateEl = document.getElementById('printLocationDateText');
+                if (dateVal && locationVal) {
+                    const dateParts = dateVal.split('-');
+                    const printYear = dateParts[0];
+                    const printMonth = parseInt(dateParts[1], 10).toString(); 
+                    const printDay = parseInt(dateParts[2], 10).toString();   
+                    const formattedPrintDate = `ngày ${printDay} tháng ${printMonth} năm ${printYear}`;
+                    printLocationDateEl.textContent = `${locationVal}, ${formattedPrintDate}`;
+                } else {
+                    printLocationDateEl.textContent = `${locationVal || '(Chưa nhập nơi lập)'}, ${dateVal ? `ngày ${parseInt(dateVal.split('-')[2],10)} tháng ${parseInt(dateVal.split('-')[1],10)} năm ${dateVal.split('-')[0]}` : '(Chưa nhập ngày)'}`;
+                }
+
+                // Signature handling for print
+                const signatureImgForPrint = document.getElementById('signatureImageDisplay');
+                if (signatureImgForPrint.src === defaultSignaturePlaceholder || !signatureUploadInput.files[0]) {
+                    signatureImgForPrint.style.display = 'none'; // Hide placeholder if no image uploaded
+                } else {
+                    signatureImgForPrint.style.display = 'inline-block'; // Ensure uploaded image is visible
+                }
+
+
+                // Determine which table is active for printing
+                const activeTableSelector = currentShipmentType === 'FCL' ? '#fclTableSection' : '#lclTableSection';
+                const elementsToConvertQuery = `#vgmForm input[type="text"], #vgmForm input[type="date"], #vgmForm input[type="tel"], #vgmForm input[type="number"], #vgmForm textarea, #vgmForm select`;
+                
+                // Filter elements to convert to only those within the active table or general form fields (not in any table)
+                const allElements = document.querySelectorAll(elementsToConvertQuery);
+                const elementsToConvert = Array.from(allElements).filter(el => {
+                    if (el.id === 'formLocation' || el.id === 'formDate') return false; // Handled separately
+                    
+                    const inFCLTable = fclTableSection.contains(el);
+                    const inLCLTable = lclTableSection.contains(el);
+
+                    if (currentShipmentType === 'FCL') {
+                        return !inLCLTable; // Process if general or in FCL table
+                    } else { // LCL
+                        return !inFCLTable; // Process if general or in LCL table
+                    }
+                });
+
+
+                const convertedElements = []; 
+
+                elementsToConvert.forEach(el => {
+                    if (el.id === 'formLocation' || el.id === 'formDate') {
+                        convertedElements.push({ original: el, replacement: null });
+                        return; 
+                    }
+
+                    let displayValue = '';
+                    let shouldHideOnly = false; 
+
+                    if (el.tagName.toLowerCase() === 'select' && el.classList.contains('container-size-select')) {
+                        if (el.value === 'OT') {
+                            const otherInput = el.closest('td').querySelector('input[name="fclContainerSizeOther[]"]'); // Specific to FCL
+                            displayValue = otherInput ? (otherInput.value || 'Other') : 'Other';
+                            if (otherInput) {
+                                otherInput.setAttribute('data-is-handled-by-select', 'true');
+                            }
+                        } else {
+                            displayValue = el.options[el.selectedIndex].textContent;
+                        }
+                    } else if (el.tagName.toLowerCase() === 'input' && el.getAttribute('name') === 'fclContainerSizeOther[]' && el.hasAttribute('data-is-handled-by-select')) {
+                        shouldHideOnly = true;
+                        el.removeAttribute('data-is-handled-by-select'); 
+                    } else { 
+                        displayValue = el.value;
+                    }
+                    
+                    el.style.display = 'none'; 
+
+                    if (!shouldHideOnly) {
+                        const span = document.createElement('span');
+                        span.textContent = displayValue || '\u00A0'; 
+                        span.setAttribute('data-print-replacement', 'true');
+                        
+                        if (el.id === 'shipperName') span.id = 'shipperNamePrint';
+                        if (el.id === 'shipperAddress') span.id = 'shipperAddressPrint';
+
+                        if (el.tagName.toLowerCase() === 'textarea') {
+                            span.classList.add('textarea-replacement');
+                        }
+                        el.parentNode.insertBefore(span, el.nextSibling);
+                        convertedElements.push({ original: el, replacement: span });
+                    } else {
+                        convertedElements.push({ original: el, replacement: null });
+                    }
+                });
+                
+                window.print();
+
+                // Restore elements after print
+                convertedElements.forEach(item => {
+                    item.original.style.display = ''; 
+                    if (item.replacement) {
+                        item.replacement.remove(); 
+                    }
+                });
+                document.querySelectorAll('[data-is-handled-by-select]').forEach(elem => elem.removeAttribute('data-is-handled-by-select'));
+                signatureImgForPrint.style.display = 'inline-block'; // Reset display for next print
+            });
+
+            const resetFormBtn = document.getElementById('resetFormBtn');
+            const vgmForm = document.getElementById('vgmForm');
+            resetFormBtn.addEventListener('click', function() {
+                vgmForm.reset(); 
+                
+                document.getElementById('formDate').value = `${year}-${month}-${day}`;
+                document.getElementById('formLocation').value = "Hà Nội"; 
+                document.getElementById('shipperName').value = "GARMENT 10 CORPORATION - JOINT STOCK COMPANY";
+                document.getElementById('shipperAddress').value = "PHUC LOI, LONG BIEN, HANOI, VIETNAM";
+                
+                signatureUploadInput.value = null; 
+                signatureImagePrint.src = defaultSignaturePlaceholder; 
+                signaturePreviewScreen.src = screenPreviewPlaceholder; 
+                signaturePreviewScreen.style.display = 'none'; 
+
+                fclTableBody.innerHTML = ''; 
+                lclTableBody.innerHTML = '';
+                fclSeq = 0; 
+                lclSeq = 0;
+
+                document.getElementById('shipmentTypeFCL').checked = true; // Reset to FCL default
+                updateFormForShipmentType('FCL'); 
+            });
+        });
+    </script>
+</body>
+</html>
